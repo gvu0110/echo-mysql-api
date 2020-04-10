@@ -2,8 +2,22 @@ package models
 
 import (
 	"echo-mysql-api/db"
+	"errors"
 	"fmt"
+	"log"
 )
+
+type employeeDaoInterface interface {
+	GetEmployee(userId int64) (*Employee, error)
+}
+
+func init() {
+	EmployeeDao = &employeeDao{}
+}
+
+type employeeDao struct{}
+
+var EmployeeDao employeeDaoInterface
 
 func GetAllEmployees() Employees {
 	con := db.CreateConnection()
@@ -27,26 +41,24 @@ func GetAllEmployees() Employees {
 	return result
 }
 
-func GetEmployee(userId int64) Employee {
+func (e *employeeDao) GetEmployee(userId int64) (*Employee, error) {
+	log.Println("We're connecting to the external database!")
 	con := db.CreateConnection()
 	sqlStatement := fmt.Sprintf("SELECT id, employee_name, employee_salary, employee_age FROM Employees WHERE id=%d", userId)
 
+	var result Employee
 	rows, err := con.Query(sqlStatement)
 	if err != nil {
-		fmt.Println(err)
+		return nil, err
 	}
-	defer rows.Close()
-	// TODO: If rows is nill
 
-	// TODO: If rows has 2 more employees
-
-	result := Employee{}
-
-	for rows.Next() {
+	if rows.Next() {
 		err = rows.Scan(&result.Id, &result.Name, &result.Salary, &result.Age)
 		if err != nil {
-			fmt.Println(err)
+			return nil, err
 		}
+		return &result, nil
+	} else {
+		return nil, errors.New("User is not found!")
 	}
-	return result
 }

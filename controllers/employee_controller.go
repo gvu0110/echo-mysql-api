@@ -8,16 +8,19 @@ import (
 	"github.com/labstack/echo"
 )
 
-func GetAllEmployees(c echo.Context) error {
-	result := models.GetAllEmployees()
-	return c.JSON(http.StatusOK, result)
-}
+// func GetAllEmployees(c echo.Context) error {
+// 	result := models.GetAllEmployees()
+// 	return c.JSON(http.StatusOK, result)
+// }
 
 func GetEmployee(c echo.Context) error {
 	userId, err := strconv.ParseInt(c.QueryParam("id"), 10, 32)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, err.Error())
 	}
-	result := models.GetEmployee(userId)
+	result, err := models.EmployeeDao.GetEmployee(userId)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, err.Error())
+	}
 	return c.JSON(http.StatusOK, result)
 }

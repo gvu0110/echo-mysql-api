@@ -21,7 +21,7 @@ func main() {
 	e.GET("/", func(c echo.Context) error {
 		return c.JSON(http.StatusCreated, "Welcome to MVC API with Golang and MySQL!")
 	})
-	e.GET("/allemployees", controllers.GetAllEmployees)
+	// e.GET("/allemployees", controllers.GetAllEmployees)
 	e.GET("/employee", controllers.GetEmployee)
 
 	e.Logger.Fatal(e.Start(":8080"))
